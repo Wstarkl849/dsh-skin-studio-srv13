@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Skin Studio">
+  <defs>
+    <linearGradient id="dsss-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6f8cff"/>
+      <stop offset="1" stop-color="#c06bff"/>
+    </linearGradient>
+    <linearGradient id="dsss-sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".42"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#dsss-bg)"/>
+  <rect x="2" y="2" width="60" height="30" rx="16" fill="url(#dsss-sheen)"/>
+  <path d="M13 41l9-9.5a3 3 0 0 1 4.4 0L34 39" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".94"/>
+  <circle cx="43" cy="21.5" r="4.4" fill="#ffffff" opacity=".94"/>
+  <path d="M21 50h22" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity=".55"/>
+</svg>

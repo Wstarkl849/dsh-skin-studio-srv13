@@ -1,0 +1,22 @@
+{
+  "name": "dsh-skin-studio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Skin Studio: wallpaper, theme, music, desktop pet and chat decoration for the DSH Web GUI.",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.jpg"
+  },
+  "files": ["index.js", "client.js", "cordis.patch.yml", "locale/*.json", "icon.jpg"],
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": ["@deepseek-ai/dsh-client-ui-conversation"]
+    }
+  }
+}

@@ -1,0 +1,6 @@
+.tmp/
+temp_*.jpg
+temp_*.png
+node_modules/
+*.zip
+.DS_Store
