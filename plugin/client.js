@@ -116,11 +116,108 @@ body[data-dsss-wp]{--dsw-alias-bg-base:transparent !important;--dsw-specific-sid
 body[data-dsss-wp] #root{background:transparent !important;opacity:var(--dsss-ui-opacity,1);transition:opacity .45s ease;}
 body[data-dsss-wp][data-dsss-blur] [data-slot="sidebar"],
 body[data-dsss-wp][data-dsss-blur] [data-slot="conversation.header"],
-body[data-dsss-wp][data-dsss-blur] [data-slot="conversation.composer"]{
+body[data-dsss-wp][data-dsss-blur] [data-composer-card]{
   backdrop-filter:blur(var(--dsss-blur,0px)) saturate(1.15);-webkit-backdrop-filter:blur(var(--dsss-blur,0px)) saturate(1.15);}
+/* 输入框背景色自定义 */
+[data-composer-card]{
+  background-color:var(--dsss-composer-bg,#1e1e1e) !important;
+  background-image:var(--dsss-composer-bg-image,none) !important;
+  background-size:cover !important;
+  background-position:center !important;
+  border-radius:16px !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.dsss-composer-bg-video{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  border-radius:16px !important;
+  pointer-events:none !important;
+  z-index:0 !important;
+}
+/* 聊天区域背景图 */
+[data-conversation-scroll]{
+  background-color:var(--dsss-chat-bg,transparent) !important;
+  background-image:var(--dsss-chat-bg-image,none) !important;
+  background-size:cover !important;
+  background-position:center !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+/* 气泡背景图 */
+[data-chat-flow] div[class*='bubble'], [data-chat-flow] div[class*='Bubble'], [data-chat-flow] div[class*='message-content'], [data-chat-flow] div[class*='MessageContent'], [data-chat-flow] div[class*='chat-message']{
+  background-image:var(--dsss-user-bubble-bg-image,none) !important;
+  background-size:cover !important;
+  background-position:center !important;
+}
+.dsss-bubble-bg-video{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  pointer-events:none !important;
+  z-index:0 !important;
+}
+.dsss-chat-bg-video{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  pointer-events:none !important;
+  z-index:0 !important;
+}
+/* 侧边栏背景色自定义 */
+[data-slot="sidebar"] > :first-child{
+  background-color:var(--dsss-sidebar-bg,transparent) !important;
+  background-image:var(--dsss-sidebar-bg-image,none) !important;
+  background-size:cover !important;
+  background-position:center !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.dsss-sidebar-bg-video{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  pointer-events:none !important;
+  z-index:0 !important;
+}
+[data-slot="sidebar"]{
+  --dsw-specific-sidebar-fill: var(--dsss-sidebar-bg) !important;
+  --dsw-alias-brand-primary: var(--dsss-sidebar-bg) !important;
+  --dsw-alias-interactive-bg-hover: var(--dsss-sidebar-bg) !important;
+  --dsw-alias-interactive-bg-active: var(--dsss-sidebar-bg) !important;
+  --dsw-alias-interactive-bg-hover-solid: var(--dsss-sidebar-bg) !important;
+  --dsw-alias-button-info-fill: var(--dsss-sidebar-bg) !important;
+  --dsw-alias-state-business-primary: var(--dsss-sidebar-bg) !important;
+  --dsw-specific-selector: var(--dsss-sidebar-bg) !important;
+  background:var(--dsss-sidebar-bg,transparent) !important;
+}
+/* 新会话和导航按钮背景色 */
+button[class*='newSession'],
+[data-slot="sidebar"] nav button,
+[data-slot="sidebar"] [class*='navItem'],
+[data-slot="sidebar"] [class*='menuItem']{
+  background: var(--dsss-sidebar-bg) !important;
+}
+[data-slot="sidebar"] svg, [data-slot="sidebar"] path{
+  color: var(--dsss-sidebar-bg) !important;
+  fill: var(--dsss-sidebar-bg) !important;
+}
 /* 开场幕是不透明的全屏层，直接盖住主界面；这里只让主界面的动效更柔一点（不能把 #root 设为透明，
    否则同一 #root 里的开场层也会一起消失） */
 body[data-dsss-intro] #root{transition:opacity .6s ease;}
+
+/* 顶部栏和所有全局文字统一用主题文字色 */
+[class*='header'], [class*='topBar'], [class*='TitleBar'] { color: var(--dsw-alias-label-primary) !important; }
+[class*='header'] svg, [class*='topBar'] svg, [class*='TitleBar'] svg { fill: var(--dsw-alias-label-primary) !important; }
 
 #dsss-stage{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none;background:#05070c;}
 #dsss-stage>*{position:absolute;inset:0;}
@@ -451,6 +548,21 @@ body[data-dsss-chat][data-dsss-ai-bubble] [data-chat-flow-kind="assistant-step"]
         uiOpacity: 100,
         fontSize: 100,
         composerBg: '#1e1e1e',
+        composerNoFill: false,
+        composerBgId: null,
+        composerBgType: null,
+        sidebarBg: '#000000',
+        sidebarNoFill: false,
+        sidebarBgId: null,
+        sidebarBgType: null,
+        chatBgId: null,
+        chatBgType: null,
+        userBubbleBg: null,
+        aiBubbleBg: null,
+        userBubbleBgId: null,
+        userBubbleBgType: null,
+        aiBubbleBgId: null,
+        aiBubbleBgType: null,
         clock: { enabled: false, format: 'HH:mm', showDate: true, size: 26, opacity: 100, bgColor: '#000000', bgNoFill: false, bgId: null, bgType: null }
       },
       chat: {
@@ -1090,6 +1202,87 @@ body[data-dsss-chat][data-dsss-ai-bubble] [data-chat-flow-kind="assistant-step"]
       return null;
     }
 
+    // 图片裁剪：直接在页面里加全屏遮罩，不用 window.open（Electron 会拦截）
+    function showCropper(file, onDone) {
+      // 视频/GIF 不裁剪，直接用
+      if ((file.type || '').indexOf('video/') === 0 || /\.gif$/i.test(file.name || '')) { onDone(file); return; }
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+          // 创建全屏遮罩
+          const mask = document.createElement('div');
+          mask.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;font-family:sans-serif;color:#fff';
+          const wrap = document.createElement('div');
+          wrap.style.cssText = 'position:relative;border:2px solid #3ddc97;cursor:crosshair;max-width:90vw;max-height:70vh';
+          const im = document.createElement('img');
+          im.src = e.target.result;
+          im.style.cssText = 'display:block;max-width:90vw;max-height:70vh;user-select:none';
+          const sel = document.createElement('div');
+          sel.style.cssText = 'position:absolute;border:2px dashed #fff;background:rgba(61,220,151,0.2);display:none;pointer-events:none';
+          wrap.appendChild(im);
+          wrap.appendChild(sel);
+          const btns = document.createElement('div');
+          btns.style.cssText = 'display:flex;gap:10px';
+          const okBtn = document.createElement('button');
+          okBtn.textContent = '裁剪并使用';
+          okBtn.style.cssText = 'padding:8px 20px;border:none;border-radius:6px;cursor:pointer;background:#3ddc97;color:#000;font-size:14px';
+          const origBtn = document.createElement('button');
+          origBtn.textContent = '不裁剪，用原图';
+          origBtn.style.cssText = 'padding:8px 20px;border:none;border-radius:6px;cursor:pointer;background:#555;color:#fff;font-size:14px';
+          const cancelBtn = document.createElement('button');
+          cancelBtn.textContent = '取消';
+          cancelBtn.style.cssText = 'padding:8px 20px;border:none;border-radius:6px;cursor:pointer;background:#555;color:#fff;font-size:14px';
+          btns.appendChild(okBtn);
+          btns.appendChild(origBtn);
+          btns.appendChild(cancelBtn);
+          const tip = document.createElement('div');
+          tip.textContent = '在图片上拖动画框选择裁剪区域';
+          tip.style.cssText = 'font-size:12px;color:#aaa';
+          mask.appendChild(wrap);
+          mask.appendChild(btns);
+          mask.appendChild(tip);
+          document.body.appendChild(mask);
+
+          let sx=0, sy=0, ex=0, ey=0, drawing=false;
+          im.onmousedown = function(ev) {
+            const r = im.getBoundingClientRect();
+            sx = ev.clientX - r.left; sy = ev.clientY - r.top;
+            drawing = true; sel.style.display='block';
+          };
+          mask.onmousemove = function(ev) {
+            if(!drawing) return;
+            const r = im.getBoundingClientRect();
+            ex = ev.clientX - r.left; ey = ev.clientY - r.top;
+            const x = Math.min(sx,ex), y = Math.min(sy,ey);
+            const w = Math.abs(ex-sx), h = Math.abs(ey-sy);
+            sel.style.left=x+'px'; sel.style.top=y+'px'; sel.style.width=w+'px'; sel.style.height=h+'px';
+          };
+          mask.onmouseup = function() { drawing=false; };
+          okBtn.onclick = function() {
+            const r = im.getBoundingClientRect();
+            const scaleX = img.naturalWidth / r.width;
+            const scaleY = img.naturalHeight / r.height;
+            const x = Math.min(sx,ex)*scaleX, y = Math.min(sy,ey)*scaleY;
+            const w = Math.abs(ex-sx)*scaleX, h = Math.abs(ey-sy)*scaleY;
+            mask.remove();
+            if(w < 10 || h < 10) { onDone(file); return; }
+            const c = document.createElement('canvas');
+            c.width = w; c.height = h;
+            c.getContext('2d').drawImage(img, x, y, w, h, 0, 0, w, h);
+            c.toBlob(function(blob) {
+              const f = new File([blob], 'cropped.png', {type:'image/png'});
+              onDone(f);
+            });
+          };
+          origBtn.onclick = function() { mask.remove(); onDone(file); };
+          cancelBtn.onclick = function() { mask.remove(); };
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
     /* ------------------------------ 缩略图 ------------------------------ */
 
     function Thumb(props) {
@@ -1141,7 +1334,13 @@ body[data-dsss-chat][data-dsss-ai-bubble] [data-chat-flow-kind="assistant-step"]
           let chain = Promise.resolve();
           let added = 0;
           fs.forEach(function (f) {
-            chain = chain.then(function () { return importFile(f, 'wallpaper').then(function () { added++; }); });
+            chain = chain.then(function () {
+              return new Promise(function(resolve) {
+                showCropper(f, function(cropped) {
+                  importFile(cropped, 'wallpaper').then(function () { added++; resolve(); });
+                });
+              });
+            });
           });
           chain.then(function () {
             props.refresh();
@@ -1420,10 +1619,12 @@ body[data-dsss-chat][data-dsss-ai-bubble] [data-chat-flow-kind="assistant-step"]
       const pick = function () {
         pickFiles({ accept: 'image/*', multiple: false }).then(function (fs) {
           if (!fs.length) return;
-          importFile(fs[0], props.kind).then(function (rec) {
-            props.onChange(rec.id);
-            props.refresh();
-            toast('头像已更新');
+          showCropper(fs[0], function(cropped) {
+            importFile(cropped, props.kind).then(function (rec) {
+              props.onChange(rec.id);
+              props.refresh();
+              toast('头像已更新');
+            });
           });
         });
       };
@@ -1514,6 +1715,109 @@ body[data-dsss-chat][data-dsss-ai-bubble] [data-chat-flow-kind="assistant-step"]
 
         h(Section, { title: '界面' },
           h(Card, null,
+            h(Row, { label: '主色调' },
+              h('input', { type: 'color', className: 'dsss-color', value: s.accent || '#4a90e2', onChange: function (e) { props.setPath('appearance.accent', e.target.value); } })
+            ),
+            h(Row, { label: '外观预设' },
+              h('div', { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } },
+                h('div', { title: '少女粉', onClick: function() {
+                    props.setPath('appearance.accent', '#ff6b9d');
+                    props.setPath('appearance.composerBg', '#ffd1dc');
+                    props.setPath('appearance.composerNoFill', false);
+                    props.setPath('appearance.sidebarBg', '#ffb6c1');
+                    props.setPath('appearance.sidebarNoFill', false);
+                    props.setPath('appearance.textColor', '#4a1942');
+                    props.setPath('appearance.borderColor', '#ff8fb3');
+                    props.setPath('chat.bubbleColor', '#ff9eb5');
+                    props.setPath('chat.aiBubbleColor', '#fff0f3');
+                    toast('已切换：少女粉');
+                  }, style: { width: 28, height: 28, borderRadius: 6, background: '#ff6b9d', cursor: 'pointer', border: '2px solid #333' } }),
+                h('div', { title: '深海蓝', onClick: function() {
+                    props.setPath('appearance.accent', '#2980b9');
+                    props.setPath('appearance.composerBg', '#1e3a5f');
+                    props.setPath('appearance.composerNoFill', false);
+                    props.setPath('appearance.sidebarBg', '#0f1e3d');
+                    props.setPath('appearance.sidebarNoFill', false);
+                    props.setPath('appearance.textColor', '#e8f0ff');
+                    props.setPath('appearance.borderColor', '#3498db');
+                    props.setPath('chat.bubbleColor', '#4a90e2');
+                    props.setPath('chat.aiBubbleColor', '#e8f0ff');
+                    toast('已切换：深海蓝');
+                  }, style: { width: 28, height: 28, borderRadius: 6, background: '#2980b9', cursor: 'pointer', border: '2px solid #333' } }),
+                h('div', { title: '森林绿', onClick: function() {
+                    props.setPath('appearance.accent', '#27ae60');
+                    props.setPath('appearance.composerBg', '#2d5a3d');
+                    props.setPath('appearance.composerNoFill', false);
+                    props.setPath('appearance.sidebarBg', '#1a3d2a');
+                    props.setPath('appearance.sidebarNoFill', false);
+                    props.setPath('appearance.textColor', '#e8ffe8');
+                    props.setPath('appearance.borderColor', '#2ecc71');
+                    props.setPath('chat.bubbleColor', '#5cb85c');
+                    props.setPath('chat.aiBubbleColor', '#e8ffe8');
+                    toast('已切换：森林绿');
+                  }, style: { width: 28, height: 28, borderRadius: 6, background: '#27ae60', cursor: 'pointer', border: '2px solid #333' } }),
+                h('div', { title: '紫罗兰', onClick: function() {
+                    props.setPath('appearance.accent', '#8e44ad');
+                    props.setPath('appearance.composerBg', '#4a3a6b');
+                    props.setPath('appearance.composerNoFill', false);
+                    props.setPath('appearance.sidebarBg', '#2d2044');
+                    props.setPath('appearance.sidebarNoFill', false);
+                    props.setPath('appearance.textColor', '#f3e8ff');
+                    props.setPath('appearance.borderColor', '#9b59b6');
+                    props.setPath('chat.bubbleColor', '#9b59b6');
+                    props.setPath('chat.aiBubbleColor', '#f3e8ff');
+                    toast('已切换：紫罗兰');
+                  }, style: { width: 28, height: 28, borderRadius: 6, background: '#8e44ad', cursor: 'pointer', border: '2px solid #333' } }),
+                h('div', { title: '暖橙', onClick: function() {
+                    props.setPath('appearance.accent', '#e67e22');
+                    props.setPath('appearance.composerBg', '#d35400');
+                    props.setPath('appearance.composerNoFill', false);
+                    props.setPath('appearance.sidebarBg', '#8b3a00');
+                    props.setPath('appearance.sidebarNoFill', false);
+                    props.setPath('appearance.textColor', '#fff3e0');
+                    props.setPath('appearance.borderColor', '#f39c12');
+                    props.setPath('chat.bubbleColor', '#e67e22');
+                    props.setPath('chat.aiBubbleColor', '#fff3e0');
+                    toast('已切换：暖橙');
+                  }, style: { width: 28, height: 28, borderRadius: 6, background: '#e67e22', cursor: 'pointer', border: '2px solid #333' } }),
+                h('div', { title: '暗夜黑', onClick: function() {
+                    props.setPath('appearance.accent', '#666666');
+                    props.setPath('appearance.composerBg', '#222222');
+                    props.setPath('appearance.composerNoFill', false);
+                    props.setPath('appearance.sidebarBg', '#111111');
+                    props.setPath('appearance.sidebarNoFill', false);
+                    props.setPath('appearance.textColor', '#eeeeee');
+                    props.setPath('appearance.borderColor', '#444444');
+                    props.setPath('chat.bubbleColor', '#444444');
+                    props.setPath('chat.aiBubbleColor', '#2d2d2d');
+                    toast('已切换：暗夜黑');
+                  }, style: { width: 28, height: 28, borderRadius: 6, background: '#222222', cursor: 'pointer', border: '2px solid #333' } }),
+                h('div', { title: '樱花紫', onClick: function() {
+                    props.setPath('appearance.accent', '#9b59b6');
+                    props.setPath('appearance.composerBg', '#9b59b6');
+                    props.setPath('appearance.composerNoFill', false);
+                    props.setPath('appearance.sidebarBg', '#6c3483');
+                    props.setPath('appearance.sidebarNoFill', false);
+                    props.setPath('appearance.textColor', '#f4ecf7');
+                    props.setPath('appearance.borderColor', '#af7ac5');
+                    props.setPath('chat.bubbleColor', '#bb8fce');
+                    props.setPath('chat.aiBubbleColor', '#f4ecf7');
+                    toast('已切换：樱花紫');
+                  }, style: { width: 28, height: 28, borderRadius: 6, background: '#9b59b6', cursor: 'pointer', border: '2px solid #333' } }),
+                h('div', { title: '奶白浅', onClick: function() {
+                    props.setPath('appearance.accent', '#95a5a6');
+                    props.setPath('appearance.composerBg', '#f5f5f5');
+                    props.setPath('appearance.composerNoFill', false);
+                    props.setPath('appearance.sidebarBg', '#e0e0e0');
+                    props.setPath('appearance.sidebarNoFill', false);
+                    props.setPath('appearance.textColor', '#333333');
+                    props.setPath('appearance.borderColor', '#bdc3c7');
+                    props.setPath('chat.bubbleColor', '#ffffff');
+                    props.setPath('chat.aiBubbleColor', '#fafafa');
+                    toast('已切换：奶白浅');
+                  }, style: { width: 28, height: 28, borderRadius: 6, background: '#f5f5f5', cursor: 'pointer', border: '2px solid #333' } })
+              )
+            ),
             h(Row, { label: '界面透明度', hint: '整体淡入淡出，壁纸透出更多' },
               h(Slider, { value: s.uiOpacity, min: 50, max: 100, onChange: function (v) { props.setPath('appearance.uiOpacity', v); } }),
               h('span', { className: 'dsss-value' }, s.uiOpacity + '%')),
@@ -1521,7 +1825,55 @@ body[data-dsss-chat][data-dsss-ai-bubble] [data-chat-flow-kind="assistant-step"]
               h(Slider, { value: s.fontSize, min: 85, max: 130, onChange: function (v) { props.setPath('appearance.fontSize', v); } }),
               h('span', { className: 'dsss-value' }, s.fontSize + '%')),
             h(Row, { label: '输入框颜色', hint: '底部发消息那个输入框的背景色，自动带 85% 半透明' },
-              h('input', { type: 'color', className: 'dsss-color', value: s.composerBg || '#1e1e1e', onChange: function (e) { props.setPath('appearance.composerBg', e.target.value); } }))
+              h('input', { type: 'color', className: 'dsss-color', value: s.composerBg || '#1e1e1e', onChange: function (e) { props.setPath('appearance.composerBg', e.target.value); } })),
+            h(Row, { label: '输入框背景图', hint: '可以放静态图或动态 GIF/视频，选完图自动弹出裁剪' },
+              h(Btn, { icon: '🖼', onClick: function () {
+                pickFiles({ accept: 'video/*,image/*', multiple: false }).then(function (fs) {
+                  if (!fs.length) return;
+                  const f = fs[0];
+                  const isVideo = /\.(mp4|webm|mov|m4v)$/i.test(f.name) || (f.type || '').indexOf('video/') === 0;
+                  showCropper(f, function(cropped) {
+                    importFile(cropped, 'composer-bg').then(function (rec) {
+                      props.update(function (draft) {
+                        draft.appearance.composerBgId = rec.id;
+                        draft.appearance.composerBgType = isVideo ? 'video' : 'image';
+                      });
+                      toast('已设置输入框' + (isVideo ? '视频' : '图片/GIF') + '背景');
+                    });
+                  });
+                });
+              } }, s.composerBgId ? '更换背景' : '选背景'),
+              s.composerBgId ? h(Btn, { icon: '✕', onClick: function () { props.update(function (d) { d.appearance.composerBgId = null; d.appearance.composerBgType = null; }); } }, '清除') : null),
+            h(Row, { label: '关闭输入框底色', hint: '开了之后输入框恢复 DSH 默认样式' },
+              h(Switch, { on: !!s.composerNoFill, onChange: function (v) { props.setPath('appearance.composerNoFill', v); } })),
+            h(Row, { label: '输入框透明度', hint: '输入框底色的不透明度，100%完全实心，0%全透明' },
+              h(Slider, { value: s.composerOpacity != null ? s.composerOpacity : 85, min: 0, max: 100, onChange: function (v) { props.setPath('appearance.composerOpacity', v); } }),
+              h('span', { className: 'dsss-value' }, (s.composerOpacity != null ? s.composerOpacity : 85) + '%')),
+            h(Row, { label: '侧边栏颜色', hint: '左边那栏（新会话/插件/工作区）的背景色' },
+              h('input', { type: 'color', className: 'dsss-color', value: s.sidebarBg || '#000000', onChange: function (e) { props.setPath('appearance.sidebarBg', e.target.value); } })),
+            h(Row, { label: '侧边栏透明度', hint: '侧边栏底色的不透明度，100%完全实心，0%全透明' },
+              h(Slider, { value: s.sidebarOpacity != null ? s.sidebarOpacity : 60, min: 0, max: 100, onChange: function (v) { props.setPath('appearance.sidebarOpacity', v); } }),
+              h('span', { className: 'dsss-value' }, (s.sidebarOpacity != null ? s.sidebarOpacity : 60) + '%')),
+            h(Row, { label: '侧边栏背景图', hint: '可以放静态图或动态 GIF/视频，选完图自动弹出裁剪' },
+              h(Btn, { icon: '🖼', onClick: function () {
+                pickFiles({ accept: 'video/*,image/*', multiple: false }).then(function (fs) {
+                  if (!fs.length) return;
+                  const f = fs[0];
+                  const isVideo = /\.(mp4|webm|mov|m4v)$/i.test(f.name) || (f.type || '').indexOf('video/') === 0;
+                  showCropper(f, function(cropped) {
+                    importFile(cropped, 'sidebar-bg').then(function (rec) {
+                      props.update(function (draft) {
+                        draft.appearance.sidebarBgId = rec.id;
+                        draft.appearance.sidebarBgType = isVideo ? 'video' : 'image';
+                      });
+                      toast('已设置侧边栏' + (isVideo ? '视频' : '图片/GIF') + '背景');
+                    });
+                  });
+                });
+              } }, s.sidebarBgId ? '更换背景' : '选背景'),
+              s.sidebarBgId ? h(Btn, { icon: '✕', onClick: function () { props.update(function (d) { d.appearance.sidebarBgId = null; d.appearance.sidebarBgType = null; }); } }, '清除') : null),
+            h(Row, { label: '关闭侧边栏底色', hint: '开了之后侧边栏恢复 DSH 默认样式' },
+              h(Switch, { on: !!s.sidebarNoFill, onChange: function (v) { props.setPath('appearance.sidebarNoFill', v); } }))
           )
         ),
 
@@ -1687,7 +2039,11 @@ body[data-dsss-chat][data-dsss-ai-bubble] [data-chat-flow-kind="assistant-step"]
           const ids = [];
           fs.forEach(function (f) {
             chain = chain.then(function () {
-              return importFile(f, 'pet-emoji').then(function (rec) { ids.push(rec.id); });
+              return new Promise(function(resolve) {
+                showCropper(f, function(cropped) {
+                  importFile(cropped, 'pet-emoji').then(function (rec) { ids.push(rec.id); resolve(); });
+                });
+              });
             });
           });
           chain.then(function () {
@@ -1719,9 +2075,12 @@ body[data-dsss-chat][data-dsss-ai-bubble] [data-chat-flow-kind="assistant-step"]
           h(Card, null,
             h(Row, { label: '自动随机消息', hint: '每隔一段时间自己说句话' },
               h(Switch, { on: p.auto, onChange: function (v) { props.setPath('pet.auto', v); } })),
-            h(Row, { label: '消息间隔', hint: '自动说话的平均间隔，实际会随机飘移' },
-              h(Slider, { value: p.autoMin, min: 1, max: 30, onChange: function (v) { props.setPath('pet.autoMin', v); } }),
-              h('span', { className: 'dsss-value' }, p.autoMin + ' 分')),
+            h(Row, { label: '消息间隔', hint: '自动说话的平均间隔，单位秒，实际会随机飘移，支持1~600秒自定义' },
+              h('input', { type: 'number', min: 1, max: 600, className: 'dsss-num', value: p.autoMin, onChange: function(e) {
+                const v = parseInt(e.target.value) || 5;
+                props.setPath('pet.autoMin', Math.max(1, Math.min(600, v)));
+              } }),
+              h('span', { className: 'dsss-value' }, '秒')),
             h(Row, { label: '消息停留', hint: '点宠物后气泡保留几秒再消失' },
               h(Slider, { value: p.msgMs / 1000, min: 2, max: 15, onChange: function (v) { props.setPath('pet.msgMs', v * 1000); } }),
               h('span', { className: 'dsss-value' }, Math.round(p.msgMs / 1000) + ' 秒')),
@@ -1894,10 +2253,10 @@ body[data-dsss-chat][data-dsss-ai-bubble] [data-chat-flow-kind="assistant-step"]
               '为 DeepSeek Harness 打造的壁纸与桌面伴侣：透明壁纸、主题配色、音乐库、桌面宠物、聊天气泡与开场动画。全部数据只保存在本机，不上传任何服务器。'),
             h(Row, { label: '项目主页', hint: '源码与更新说明' },
               h('a', {
-                href: 'https://github.com/your-name/dsh-skin-studio',
+                href: 'https://github.com/Wstarkl849/dsh-skin-studio-srv13',
                 target: '_blank', rel: 'noreferrer',
                 style: { color: 'var(--dsss-accent)', fontSize: '12.5px', textDecoration: 'none' }
-              }, 'github.com/your-name/dsh-skin-studio →'))
+              }, 'github.com/Wstarkl849/dsh-skin-studio-srv13 →'))
           )
         ),
         h(Section, { title: '小提示' },
@@ -2166,9 +2525,18 @@ body[data-dsss-chat][data-dsss-ai-bubble] [data-chat-flow-kind="assistant-step"]
       }, [pos, p.size]);
 
       const say = useCallback(function () {
-        if (!quotes.length) return;
-        const textItems = quotes.filter(function (q) { return q && q.type === 'text'; });
-        const imgItems = quotes.filter(function (q) { return q && q.type === 'image'; });
+        let textItems = quotes.filter(function (q) { return q && q.type === 'text'; });
+        let imgItems = quotes.filter(function (q) { return q && q.type === 'image'; });
+        // 语录库空了用默认内置句
+        if (!textItems.length) {
+          textItems = [
+            { id: '__default1', type: 'text', text: '在摸鱼~' },
+            { id: '__default2', type: 'text', text: '需要我帮忙吗？' },
+            { id: '__default3', type: 'text', text: '今天也要开心哦' },
+            { id: '__default4', type: 'text', text: '嘿嘿~' },
+            { id: '__default5', type: 'text', text: '别太累啦' }
+          ];
+        }
         const tP = Math.max(0, Number(p.textChance) || 0);
         const iP = Math.max(0, Number(p.popEmojiChance) || 0);
         let pool;
@@ -2190,7 +2558,7 @@ body[data-dsss-chat][data-dsss-ai-bubble] [data-chat-flow-kind="assistant-step"]
       useEffect(function () {
         if (!p.enabled || !p.visible || !p.auto) return;
         let cancelled = false;
-        const base = Math.max(1, Number(p.autoMin) || 3) * 60000;
+        const base = Math.max(1, Number(p.autoMin) || 5) * 1000;
         const schedule = function () {
           const jitter = base * (0.5 + Math.random());
           autoTimer.current = setTimeout(function () {
@@ -2199,6 +2567,7 @@ body[data-dsss-chat][data-dsss-ai-bubble] [data-chat-flow-kind="assistant-step"]
             schedule();
           }, jitter);
         };
+        say();
         schedule();
         return function () { cancelled = true; if (autoTimer.current) clearTimeout(autoTimer.current); };
       }, [p.enabled, p.visible, p.auto, p.autoMin, say]);
@@ -2457,18 +2826,37 @@ body[data-dsss-chat][data-dsss-ai-bubble] [data-chat-flow-kind="assistant-step"]
       const aiAlpha = 0.16;
       const userImg = urls.user ? 'url("' + urls.user + '")' : 'linear-gradient(145deg,#3ddc97,#1d4d3b)';
       const aiImg = urls.ai ? 'url("' + urls.ai + '")' : 'linear-gradient(145deg,#7c8cff,#33396b)';
+      const composerBgImg = urls.composer ? 'url("' + urls.composer + '")' : 'none';
+      const sidebarBgImg = urls.sidebar ? 'url("' + urls.sidebar + '")' : 'none';
+      const chatBgImg = urls.chat ? 'url("' + urls.chat + '")' : 'none';
+      const userBubbleBgImg = urls.userBubble ? 'url("' + urls.userBubble + '")' : 'none';
+      const aiBubbleBgImg = urls.aiBubble ? 'url("' + urls.aiBubble + '")' : 'none';
       const textColorRule = a.textColor ? '--dsw-alias-label-primary:' + a.textColor + ' !important;--dsw-alias-label-secondary:' + hexToRgba(a.textColor, 0.65) + ' !important;' : '';
+      const borderColor = a.borderColor || a.accent || '#4a90e2';
+      const borderRule = '--dsw-alias-border-color:' + borderColor + ' !important;--dsw-alias-border-color-strong:' + borderColor + ' !important;--dsw-alias-divider-color:' + hexToRgba(borderColor, 0.3) + ' !important;';
       const aiBubbleRule = (c.aiBubble && !c.aiBubbleNoFill) ? '--dsss-ai-bubble:' + hexToRgba(c.aiBubbleColor || '#7c8cff', aiAlpha) + ' !important;' : '--dsss-ai-bubble:rgba(255,255,255,0);';
       return [
         ':root,html,body{',
         '--dsss-accent:' + a.accent + ';',
         '--dsss-accent-soft:' + hexToRgba(a.accent, 0.16) + ';',
         '--dsw-alias-brand-primary:' + a.accent + ' !important;',
+        '--dsw-alias-button-primary-fill:' + a.accent + ' !important;',
+        '--dsw-alias-button-primary-hover:' + hexToRgba(a.accent, 0.85) + ' !important;',
+        '--dsw-alias-interactive-bg-hover:' + hexToRgba(a.accent, 0.15) + ' !important;',
+        '--dsw-alias-interactive-bg-active:' + hexToRgba(a.accent, 0.25) + ' !important;',
+        '--dsw-alias-state-business-primary:' + a.accent + ' !important;',
         textColorRule,
+        borderRule,
         '--dsss-ui-opacity:' + (a.uiOpacity / 100).toFixed(3) + ';',
         '--dsh-content-font-size:' + fontPx.toFixed(2) + 'px;',
         '--dsh-content-font-delta:' + delta.toFixed(2) + 'px;',
-        '--dsss-composer-bg:' + hexToRgba(a.composerBg || '#1e1e1e', 0.85) + ';',
+        '--dsss-composer-bg:' + (a.composerNoFill ? 'unset' : hexToRgba(a.composerBg || '#1e1e1e', (a.composerOpacity != null ? a.composerOpacity : 85)/100)) + ';',
+        '--dsss-composer-bg-image:' + (a.composerBgType === 'video' ? 'none' : composerBgImg) + ';',
+        '--dsss-sidebar-bg:' + (a.sidebarNoFill ? 'unset' : hexToRgba(a.sidebarBg || '#000000', (a.sidebarOpacity != null ? a.sidebarOpacity : 60)/100)) + ';',
+        '--dsss-sidebar-bg-image:' + (a.sidebarBgType === 'video' ? 'none' : sidebarBgImg) + ';',
+        '--dsss-chat-bg-image:' + (a.chatBgType === 'video' ? 'none' : chatBgImg) + ';',
+        '--dsss-user-bubble-bg-image:' + (a.userBubbleBgType === 'video' ? 'none' : userBubbleBgImg) + ';',
+        '--dsss-ai-bubble-bg-image:' + (a.aiBubbleBgType === 'video' ? 'none' : aiBubbleBgImg) + ';',
         '--dsss-blur:' + (s.wallpaper.blur || 0) + 'px;',
         '--dsss-av-size:38px;',
         '--dsss-av-border:' + c.frameWidth + 'px;',
@@ -2564,10 +2952,9 @@ body[data-dsss-chat][data-dsss-ai-bubble] [data-chat-flow-kind="assistant-step"]
         }
 
         update(function (s) {
-          if (!s.wallpaper.current || !ids.has(s.wallpaper.current)) {
-            const pick = latest('wallpaper');
-            if (pick) { s.wallpaper.current = pick; s.wallpaper.enabled = true; }
-            else { s.wallpaper.current = null; s.wallpaper.enabled = false; }
+          if (s.wallpaper.current && !ids.has(s.wallpaper.current)) {
+            s.wallpaper.current = null;
+            s.wallpaper.enabled = false;
           }
           if (s.chat.userAvatar && !ids.has(s.chat.userAvatar)) s.chat.userAvatar = latest('user-avatar');
           if (s.chat.aiAvatar && !ids.has(s.chat.aiAvatar)) s.chat.aiAvatar = latest('ai-avatar');
@@ -2591,6 +2978,11 @@ body[data-dsss-chat][data-dsss-ai-bubble] [data-chat-flow-kind="assistant-step"]
 
       const wpRec = fileOf(fileList, settings.wallpaper.current);
       const wpUrl = useBlobUrl(settings.wallpaper.current && wpRec ? settings.wallpaper.current : null);
+      const composerBgUrl = useBlobUrl(settings.appearance.composerBgId);
+      const sidebarBgUrl = useBlobUrl(settings.appearance.sidebarBgId);
+      const chatBgUrl = useBlobUrl(settings.appearance.chatBgId);
+      const userBubbleBgUrl = useBlobUrl(settings.appearance.userBubbleBgId);
+      const aiBubbleBgUrl = useBlobUrl(settings.appearance.aiBubbleBgId);
       const userAvUrl = useBlobUrl(settings.chat.userAvatar);
       const aiAvUrl = useBlobUrl(settings.chat.aiAvatar);
       const introLogoUrl = useBlobUrl(settings.intro.logo);
@@ -2603,8 +2995,63 @@ body[data-dsss-chat][data-dsss-ai-bubble] [data-chat-flow-kind="assistant-step"]
 
       useEffect(function () {
         if (!varsRef.current) return;
-        varsRef.current.textContent = varsCss(settings, { user: userAvUrl, ai: aiAvUrl });
-      }, [settings, userAvUrl, aiAvUrl]);
+        varsRef.current.textContent = varsCss(settings, { user: userAvUrl, ai: aiAvUrl, composer: composerBgUrl, sidebar: sidebarBgUrl, chat: chatBgUrl, userBubble: userBubbleBgUrl, aiBubble: aiBubbleBgUrl });
+      }, [settings, userAvUrl, aiAvUrl, composerBgUrl, sidebarBgUrl, chatBgUrl, userBubbleBgUrl, aiBubbleBgUrl]);
+
+      // 插入动态背景视频
+      useEffect(function () {
+        // 输入框背景视频
+        const composerEl = document.querySelector('[data-composer-card]');
+        if (composerEl) {
+          const old = composerEl.querySelector('.dsss-composer-bg-video');
+          if (old) old.remove();
+          if (settings.appearance.composerBgType === 'video' && composerBgUrl) {
+            const v = document.createElement('video');
+            v.className = 'dsss-composer-bg-video';
+            v.src = composerBgUrl;
+            v.autoplay = true;
+            v.loop = true;
+            v.muted = true;
+            v.playsInline = true;
+            composerEl.prepend(v);
+            v.play().catch(function(){});
+          }
+        }
+        // 侧边栏背景视频
+        const sidebarEl = document.querySelector('[data-slot="sidebar"] > :first-child');
+        if (sidebarEl) {
+          const old = sidebarEl.querySelector('.dsss-sidebar-bg-video');
+          if (old) old.remove();
+          if (settings.appearance.sidebarBgType === 'video' && sidebarBgUrl) {
+            const v = document.createElement('video');
+            v.className = 'dsss-sidebar-bg-video';
+            v.src = sidebarBgUrl;
+            v.autoplay = true;
+            v.loop = true;
+            v.muted = true;
+            v.playsInline = true;
+            sidebarEl.prepend(v);
+            v.play().catch(function(){});
+          }
+        }
+        // 聊天区域背景视频
+        const chatEl = document.querySelector('[data-conversation-scroll]');
+        if (chatEl) {
+          const old = chatEl.querySelector('.dsss-chat-bg-video');
+          if (old) old.remove();
+          if (settings.appearance.chatBgType === 'video' && chatBgUrl) {
+            const v = document.createElement('video');
+            v.className = 'dsss-chat-bg-video';
+            v.src = chatBgUrl;
+            v.autoplay = true;
+            v.loop = true;
+            v.muted = true;
+            v.playsInline = true;
+            chatEl.prepend(v);
+            v.play().catch(function(){});
+          }
+        }
+      }, [composerBgUrl, sidebarBgUrl, chatBgUrl, settings.appearance.composerBgType, settings.appearance.sidebarBgType, settings.appearance.chatBgType]);
 
       useEffect(function () {
         const b = document.body;

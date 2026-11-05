@@ -19,18 +19,37 @@
       const aiAlpha = 0.16;
       const userImg = urls.user ? 'url("' + urls.user + '")' : 'linear-gradient(145deg,#3ddc97,#1d4d3b)';
       const aiImg = urls.ai ? 'url("' + urls.ai + '")' : 'linear-gradient(145deg,#7c8cff,#33396b)';
+      const composerBgImg = urls.composer ? 'url("' + urls.composer + '")' : 'none';
+      const sidebarBgImg = urls.sidebar ? 'url("' + urls.sidebar + '")' : 'none';
+      const chatBgImg = urls.chat ? 'url("' + urls.chat + '")' : 'none';
+      const userBubbleBgImg = urls.userBubble ? 'url("' + urls.userBubble + '")' : 'none';
+      const aiBubbleBgImg = urls.aiBubble ? 'url("' + urls.aiBubble + '")' : 'none';
       const textColorRule = a.textColor ? '--dsw-alias-label-primary:' + a.textColor + ' !important;--dsw-alias-label-secondary:' + hexToRgba(a.textColor, 0.65) + ' !important;' : '';
+      const borderColor = a.borderColor || a.accent || '#4a90e2';
+      const borderRule = '--dsw-alias-border-color:' + borderColor + ' !important;--dsw-alias-border-color-strong:' + borderColor + ' !important;--dsw-alias-divider-color:' + hexToRgba(borderColor, 0.3) + ' !important;';
       const aiBubbleRule = (c.aiBubble && !c.aiBubbleNoFill) ? '--dsss-ai-bubble:' + hexToRgba(c.aiBubbleColor || '#7c8cff', aiAlpha) + ' !important;' : '--dsss-ai-bubble:rgba(255,255,255,0);';
       return [
         ':root,html,body{',
         '--dsss-accent:' + a.accent + ';',
         '--dsss-accent-soft:' + hexToRgba(a.accent, 0.16) + ';',
         '--dsw-alias-brand-primary:' + a.accent + ' !important;',
+        '--dsw-alias-button-primary-fill:' + a.accent + ' !important;',
+        '--dsw-alias-button-primary-hover:' + hexToRgba(a.accent, 0.85) + ' !important;',
+        '--dsw-alias-interactive-bg-hover:' + hexToRgba(a.accent, 0.15) + ' !important;',
+        '--dsw-alias-interactive-bg-active:' + hexToRgba(a.accent, 0.25) + ' !important;',
+        '--dsw-alias-state-business-primary:' + a.accent + ' !important;',
         textColorRule,
+        borderRule,
         '--dsss-ui-opacity:' + (a.uiOpacity / 100).toFixed(3) + ';',
         '--dsh-content-font-size:' + fontPx.toFixed(2) + 'px;',
         '--dsh-content-font-delta:' + delta.toFixed(2) + 'px;',
-        '--dsss-composer-bg:' + hexToRgba(a.composerBg || '#1e1e1e', 0.85) + ';',
+        '--dsss-composer-bg:' + (a.composerNoFill ? 'unset' : hexToRgba(a.composerBg || '#1e1e1e', (a.composerOpacity != null ? a.composerOpacity : 85)/100)) + ';',
+        '--dsss-composer-bg-image:' + (a.composerBgType === 'video' ? 'none' : composerBgImg) + ';',
+        '--dsss-sidebar-bg:' + (a.sidebarNoFill ? 'unset' : hexToRgba(a.sidebarBg || '#000000', (a.sidebarOpacity != null ? a.sidebarOpacity : 60)/100)) + ';',
+        '--dsss-sidebar-bg-image:' + (a.sidebarBgType === 'video' ? 'none' : sidebarBgImg) + ';',
+        '--dsss-chat-bg-image:' + (a.chatBgType === 'video' ? 'none' : chatBgImg) + ';',
+        '--dsss-user-bubble-bg-image:' + (a.userBubbleBgType === 'video' ? 'none' : userBubbleBgImg) + ';',
+        '--dsss-ai-bubble-bg-image:' + (a.aiBubbleBgType === 'video' ? 'none' : aiBubbleBgImg) + ';',
         '--dsss-blur:' + (s.wallpaper.blur || 0) + 'px;',
         '--dsss-av-size:38px;',
         '--dsss-av-border:' + c.frameWidth + 'px;',
@@ -126,10 +145,9 @@
         }
 
         update(function (s) {
-          if (!s.wallpaper.current || !ids.has(s.wallpaper.current)) {
-            const pick = latest('wallpaper');
-            if (pick) { s.wallpaper.current = pick; s.wallpaper.enabled = true; }
-            else { s.wallpaper.current = null; s.wallpaper.enabled = false; }
+          if (s.wallpaper.current && !ids.has(s.wallpaper.current)) {
+            s.wallpaper.current = null;
+            s.wallpaper.enabled = false;
           }
           if (s.chat.userAvatar && !ids.has(s.chat.userAvatar)) s.chat.userAvatar = latest('user-avatar');
           if (s.chat.aiAvatar && !ids.has(s.chat.aiAvatar)) s.chat.aiAvatar = latest('ai-avatar');
@@ -153,6 +171,11 @@
 
       const wpRec = fileOf(fileList, settings.wallpaper.current);
       const wpUrl = useBlobUrl(settings.wallpaper.current && wpRec ? settings.wallpaper.current : null);
+      const composerBgUrl = useBlobUrl(settings.appearance.composerBgId);
+      const sidebarBgUrl = useBlobUrl(settings.appearance.sidebarBgId);
+      const chatBgUrl = useBlobUrl(settings.appearance.chatBgId);
+      const userBubbleBgUrl = useBlobUrl(settings.appearance.userBubbleBgId);
+      const aiBubbleBgUrl = useBlobUrl(settings.appearance.aiBubbleBgId);
       const userAvUrl = useBlobUrl(settings.chat.userAvatar);
       const aiAvUrl = useBlobUrl(settings.chat.aiAvatar);
       const introLogoUrl = useBlobUrl(settings.intro.logo);
@@ -165,8 +188,63 @@
 
       useEffect(function () {
         if (!varsRef.current) return;
-        varsRef.current.textContent = varsCss(settings, { user: userAvUrl, ai: aiAvUrl });
-      }, [settings, userAvUrl, aiAvUrl]);
+        varsRef.current.textContent = varsCss(settings, { user: userAvUrl, ai: aiAvUrl, composer: composerBgUrl, sidebar: sidebarBgUrl, chat: chatBgUrl, userBubble: userBubbleBgUrl, aiBubble: aiBubbleBgUrl });
+      }, [settings, userAvUrl, aiAvUrl, composerBgUrl, sidebarBgUrl, chatBgUrl, userBubbleBgUrl, aiBubbleBgUrl]);
+
+      // 插入动态背景视频
+      useEffect(function () {
+        // 输入框背景视频
+        const composerEl = document.querySelector('[data-composer-card]');
+        if (composerEl) {
+          const old = composerEl.querySelector('.dsss-composer-bg-video');
+          if (old) old.remove();
+          if (settings.appearance.composerBgType === 'video' && composerBgUrl) {
+            const v = document.createElement('video');
+            v.className = 'dsss-composer-bg-video';
+            v.src = composerBgUrl;
+            v.autoplay = true;
+            v.loop = true;
+            v.muted = true;
+            v.playsInline = true;
+            composerEl.prepend(v);
+            v.play().catch(function(){});
+          }
+        }
+        // 侧边栏背景视频
+        const sidebarEl = document.querySelector('[data-slot="sidebar"] > :first-child');
+        if (sidebarEl) {
+          const old = sidebarEl.querySelector('.dsss-sidebar-bg-video');
+          if (old) old.remove();
+          if (settings.appearance.sidebarBgType === 'video' && sidebarBgUrl) {
+            const v = document.createElement('video');
+            v.className = 'dsss-sidebar-bg-video';
+            v.src = sidebarBgUrl;
+            v.autoplay = true;
+            v.loop = true;
+            v.muted = true;
+            v.playsInline = true;
+            sidebarEl.prepend(v);
+            v.play().catch(function(){});
+          }
+        }
+        // 聊天区域背景视频
+        const chatEl = document.querySelector('[data-conversation-scroll]');
+        if (chatEl) {
+          const old = chatEl.querySelector('.dsss-chat-bg-video');
+          if (old) old.remove();
+          if (settings.appearance.chatBgType === 'video' && chatBgUrl) {
+            const v = document.createElement('video');
+            v.className = 'dsss-chat-bg-video';
+            v.src = chatBgUrl;
+            v.autoplay = true;
+            v.loop = true;
+            v.muted = true;
+            v.playsInline = true;
+            chatEl.prepend(v);
+            v.play().catch(function(){});
+          }
+        }
+      }, [composerBgUrl, sidebarBgUrl, chatBgUrl, settings.appearance.composerBgType, settings.appearance.sidebarBgType, settings.appearance.chatBgType]);
 
       useEffect(function () {
         const b = document.body;

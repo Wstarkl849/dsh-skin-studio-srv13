@@ -6,11 +6,108 @@ body[data-dsss-wp]{--dsw-alias-bg-base:transparent !important;--dsw-specific-sid
 body[data-dsss-wp] #root{background:transparent !important;opacity:var(--dsss-ui-opacity,1);transition:opacity .45s ease;}
 body[data-dsss-wp][data-dsss-blur] [data-slot="sidebar"],
 body[data-dsss-wp][data-dsss-blur] [data-slot="conversation.header"],
-body[data-dsss-wp][data-dsss-blur] [data-slot="conversation.composer"]{
+body[data-dsss-wp][data-dsss-blur] [data-composer-card]{
   backdrop-filter:blur(var(--dsss-blur,0px)) saturate(1.15);-webkit-backdrop-filter:blur(var(--dsss-blur,0px)) saturate(1.15);}
+/* 输入框背景色自定义 */
+[data-composer-card]{
+  background-color:var(--dsss-composer-bg,#1e1e1e) !important;
+  background-image:var(--dsss-composer-bg-image,none) !important;
+  background-size:cover !important;
+  background-position:center !important;
+  border-radius:16px !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.dsss-composer-bg-video{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  border-radius:16px !important;
+  pointer-events:none !important;
+  z-index:0 !important;
+}
+/* 聊天区域背景图 */
+[data-conversation-scroll]{
+  background-color:var(--dsss-chat-bg,transparent) !important;
+  background-image:var(--dsss-chat-bg-image,none) !important;
+  background-size:cover !important;
+  background-position:center !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+/* 气泡背景图 */
+[data-chat-flow] div[class*='bubble'], [data-chat-flow] div[class*='Bubble'], [data-chat-flow] div[class*='message-content'], [data-chat-flow] div[class*='MessageContent'], [data-chat-flow] div[class*='chat-message']{
+  background-image:var(--dsss-user-bubble-bg-image,none) !important;
+  background-size:cover !important;
+  background-position:center !important;
+}
+.dsss-bubble-bg-video{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  pointer-events:none !important;
+  z-index:0 !important;
+}
+.dsss-chat-bg-video{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  pointer-events:none !important;
+  z-index:0 !important;
+}
+/* 侧边栏背景色自定义 */
+[data-slot="sidebar"] > :first-child{
+  background-color:var(--dsss-sidebar-bg,transparent) !important;
+  background-image:var(--dsss-sidebar-bg-image,none) !important;
+  background-size:cover !important;
+  background-position:center !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.dsss-sidebar-bg-video{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  pointer-events:none !important;
+  z-index:0 !important;
+}
+[data-slot="sidebar"]{
+  --dsw-specific-sidebar-fill: var(--dsss-sidebar-bg) !important;
+  --dsw-alias-brand-primary: var(--dsss-sidebar-bg) !important;
+  --dsw-alias-interactive-bg-hover: var(--dsss-sidebar-bg) !important;
+  --dsw-alias-interactive-bg-active: var(--dsss-sidebar-bg) !important;
+  --dsw-alias-interactive-bg-hover-solid: var(--dsss-sidebar-bg) !important;
+  --dsw-alias-button-info-fill: var(--dsss-sidebar-bg) !important;
+  --dsw-alias-state-business-primary: var(--dsss-sidebar-bg) !important;
+  --dsw-specific-selector: var(--dsss-sidebar-bg) !important;
+  background:var(--dsss-sidebar-bg,transparent) !important;
+}
+/* 新会话和导航按钮背景色 */
+button[class*='newSession'],
+[data-slot="sidebar"] nav button,
+[data-slot="sidebar"] [class*='navItem'],
+[data-slot="sidebar"] [class*='menuItem']{
+  background: var(--dsss-sidebar-bg) !important;
+}
+[data-slot="sidebar"] svg, [data-slot="sidebar"] path{
+  color: var(--dsss-sidebar-bg) !important;
+  fill: var(--dsss-sidebar-bg) !important;
+}
 /* 开场幕是不透明的全屏层，直接盖住主界面；这里只让主界面的动效更柔一点（不能把 #root 设为透明，
    否则同一 #root 里的开场层也会一起消失） */
 body[data-dsss-intro] #root{transition:opacity .6s ease;}
+
+/* 顶部栏和所有全局文字统一用主题文字色 */
+[class*='header'], [class*='topBar'], [class*='TitleBar'] { color: var(--dsw-alias-label-primary) !important; }
+[class*='header'] svg, [class*='topBar'] svg, [class*='TitleBar'] svg { fill: var(--dsw-alias-label-primary) !important; }
 
 #dsss-stage{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none;background:#05070c;}
 #dsss-stage>*{position:absolute;inset:0;}

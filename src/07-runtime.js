@@ -253,9 +253,18 @@
       }, [pos, p.size]);
 
       const say = useCallback(function () {
-        if (!quotes.length) return;
-        const textItems = quotes.filter(function (q) { return q && q.type === 'text'; });
-        const imgItems = quotes.filter(function (q) { return q && q.type === 'image'; });
+        let textItems = quotes.filter(function (q) { return q && q.type === 'text'; });
+        let imgItems = quotes.filter(function (q) { return q && q.type === 'image'; });
+        // 语录库空了用默认内置句
+        if (!textItems.length) {
+          textItems = [
+            { id: '__default1', type: 'text', text: '在摸鱼~' },
+            { id: '__default2', type: 'text', text: '需要我帮忙吗？' },
+            { id: '__default3', type: 'text', text: '今天也要开心哦' },
+            { id: '__default4', type: 'text', text: '嘿嘿~' },
+            { id: '__default5', type: 'text', text: '别太累啦' }
+          ];
+        }
         const tP = Math.max(0, Number(p.textChance) || 0);
         const iP = Math.max(0, Number(p.popEmojiChance) || 0);
         let pool;
@@ -277,7 +286,7 @@
       useEffect(function () {
         if (!p.enabled || !p.visible || !p.auto) return;
         let cancelled = false;
-        const base = Math.max(1, Number(p.autoMin) || 3) * 60000;
+        const base = Math.max(1, Number(p.autoMin) || 5) * 1000;
         const schedule = function () {
           const jitter = base * (0.5 + Math.random());
           autoTimer.current = setTimeout(function () {
@@ -286,6 +295,7 @@
             schedule();
           }, jitter);
         };
+        say();
         schedule();
         return function () { cancelled = true; if (autoTimer.current) clearTimeout(autoTimer.current); };
       }, [p.enabled, p.visible, p.auto, p.autoMin, say]);
