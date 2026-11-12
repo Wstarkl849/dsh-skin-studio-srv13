@@ -2,7 +2,37 @@
 /* ============================ Skin Studio base ============================ */
 :root{--dsss-accent:#3ddc97;--dsss-accent-soft:rgba(61,220,151,.16);}
 html:has(body[data-dsss-wp]){background:transparent !important;}
-body[data-dsss-wp]{--dsw-alias-bg-base:transparent !important;--dsw-specific-sidebar-fill:transparent !important;background:transparent !important;}
+/* 壁纸层显隐由壁纸开关兜底：没开壁纸就一律不显示，避免状态没同步时壁纸残留在界面上 */
+#dsss-stage{display:none !important;}
+body[data-dsss-wp] #dsss-stage{display:block !important;}
+body[data-dsss-wp]{
+  --dsw-alias-bg-base:transparent !important;
+  --dsw-alias-bg-layer-1:transparent !important;
+  --dsw-alias-bg-layer-2:transparent !important;
+  --dsw-alias-bg-layer-3:transparent !important;
+  --dsw-alias-bg-layer-4:transparent !important;
+  --dsw-alias-bg-module-platform:transparent !important;
+  --dsw-alias-button-tool-bar-fill:transparent !important;
+  --dsw-alias-button-ghost-active-fill:transparent !important;
+  --dsw-alias-menu-group-header-fill:transparent !important;
+  --dsw-alias-interactive-bg-hover:transparent !important;
+  --dsw-alias-interactive-bg-active:transparent !important;
+  --dsw-specific-sidebar-fill:transparent !important;
+  background:transparent !important;
+}
+/* 新会话页 / 工作区：内层卡片、列表、开关底板一律不吃壁纸 */
+body[data-dsss-wp] [data-slot="root"],
+body[data-dsss-wp] [data-slot="workspace"],
+body[data-dsss-wp] [data-slot="new-chat"],
+body[data-dsss-wp] [data-slot="conversation"],
+body[data-dsss-wp] [data-slot="conversation.header"],
+body[data-dsss-wp] [data-slot="sidebar"],
+body[data-dsss-wp] [data-composer-card],
+body[data-dsss-wp] [role="switch"]:not(.dsss-switch),
+body[data-dsss-wp] [data-switch]:not(.dsss-switch),
+body[data-dsss-wp] [class*="switch"]:not(.dsss-switch){
+  background-color:transparent !important;
+}
 body[data-dsss-wp] #root{background:transparent !important;opacity:var(--dsss-ui-opacity,1);transition:opacity .45s ease;}
 body[data-dsss-wp][data-dsss-blur] [data-slot="sidebar"],
 body[data-dsss-wp][data-dsss-blur] [data-slot="conversation.header"],
@@ -90,12 +120,46 @@ body[data-dsss-wp][data-dsss-blur] [data-composer-card]{
   --dsw-specific-selector: var(--dsss-sidebar-bg) !important;
   background:var(--dsss-sidebar-bg,transparent) !important;
 }
-/* 新会话和导航按钮背景色 */
-button[class*='newSession'],
+/* 新会话按钮单独背景 */
+button[class*='newSession']{
+  position: relative !important;
+  background: var(--dsss-new-session-bg, var(--dsss-session-item-bg, var(--dsss-sidebar-bg))) !important;
+  background-image: var(--dsss-new-session-bg-image, none) !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+button[class*='newSession'] > *:not(video){
+  position: relative !important;
+  z-index: 1 !important;
+}
+/* 工作区文件夹条目单独背景 */
+[data-slot="sidebar"] [class*='projectRow']{
+  position: relative !important;
+  background: var(--dsss-workspace-folder-bg, var(--dsss-session-item-bg, var(--dsss-sidebar-bg))) !important;
+  background-image: var(--dsss-workspace-folder-bg-image, none) !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+[data-slot="sidebar"] [class*='projectRow'] > *:not(video){
+  position: relative !important;
+  z-index: 1 !important;
+}
+/* 展开的会话子条目背景（工作区行另走 --dsss-workspace-folder-bg，这里不抢） */
 [data-slot="sidebar"] nav button,
 [data-slot="sidebar"] [class*='navItem'],
-[data-slot="sidebar"] [class*='menuItem']{
-  background: var(--dsss-sidebar-bg) !important;
+[data-slot="sidebar"] [class*='menuItem'],
+[data-slot="sidebar"] [class*='sessionRow'],
+[data-slot="sidebar"] [class*='wnFoaW_slot']{
+  position: relative !important;
+  background: var(--dsss-session-item-bg, var(--dsss-sidebar-bg)) !important;
+  background-image: var(--dsss-session-item-bg-image, none) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  overflow: hidden !important;
+}
+[data-slot="sidebar"] [class*='wnFoaW_slot'] > *:not(video){
+  position: relative !important;
+  z-index: 1 !important;
 }
 [data-slot="sidebar"] svg, [data-slot="sidebar"] path{
   color: var(--dsss-sidebar-bg) !important;

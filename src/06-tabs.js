@@ -521,6 +521,16 @@
 
         h(Section, { title: '界面' },
           h(Card, null,
+            h(Row, { label: '重置全部外观', hint: '一键恢复所有颜色、透明度、背景图到默认状态，所有自定义全部清空' },
+              h(Btn, { icon: '🔄', danger: true, onClick: function () {
+                if (confirm('确定要重置所有外观设置吗？所有自定义颜色、透明度、背景图都会恢复默认。')) {
+                  props.update(function(d) {
+                    d.appearance = { accent: '#4a90e2', textColor: '#1f2329', borderColor: '#4a90e2', bubbleColor: '#4a90e2', aiBubbleColor: '#7c8cff', composerBg: '#1e1e1e', composerOpacity: 85, sidebarBg: '#000000', sidebarOpacity: 60, sessionItemEnabled: false, newSessionEnabled: false, workspaceFolderEnabled: false };
+                  });
+                  toast('已重置全部外观设置');
+                }
+              } }, '重置全部')
+            ),
             h(Row, { label: '主色调' },
               h('input', { type: 'color', className: 'dsss-color', value: s.accent || '#4a90e2', onChange: function (e) { props.setPath('appearance.accent', e.target.value); } })
             ),
@@ -679,7 +689,82 @@
               } }, s.sidebarBgId ? '更换背景' : '选背景'),
               s.sidebarBgId ? h(Btn, { icon: '✕', onClick: function () { props.update(function (d) { d.appearance.sidebarBgId = null; d.appearance.sidebarBgType = null; }); } }, '清除') : null),
             h(Row, { label: '关闭侧边栏底色', hint: '开了之后侧边栏恢复 DSH 默认样式' },
-              h(Switch, { on: !!s.sidebarNoFill, onChange: function (v) { props.setPath('appearance.sidebarNoFill', v); } }))
+              h(Switch, { on: !!s.sidebarNoFill, onChange: function (v) { props.setPath('appearance.sidebarNoFill', v); } })),
+            h(Row, { label: '自定义会话条目', hint: '给工作区/会话列表条目单独设底色和背景图，开了才生效' },
+              h(Switch, { on: !!s.sessionItemEnabled, onChange: function (v) { props.setPath('appearance.sessionItemEnabled', v); } })),
+            s.sessionItemEnabled ? h(Row, { label: '会话条目底色', hint: '每个列表条目的背景颜色' },
+              h('input', { type: 'color', className: 'dsss-color', value: s.sessionItemBg || '#2a3a5e', onChange: function (e) { props.setPath('appearance.sessionItemBg', e.target.value); } })) : null,
+            s.sessionItemEnabled ? h(Row, { label: '会话条目透明度', hint: '底色不透明度，0%全透明' },
+              h(Slider, { value: s.sessionItemOpacity != null ? s.sessionItemOpacity : 80, min: 0, max: 100, onChange: function (v) { props.setPath('appearance.sessionItemOpacity', v); } }),
+              h('span', { className: 'dsss-value' }, (s.sessionItemOpacity != null ? s.sessionItemOpacity : 80) + '%')) : null,
+            s.sessionItemEnabled ? h(Row, { label: '会话条目背景图', hint: '工作区/会话列表每一条的背景，可以放静态图/GIF/视频动态壁纸' },
+              h(Btn, { icon: '🖼', onClick: function () {
+                pickFiles({ accept: 'video/*,image/*', multiple: false }).then(function (fs) {
+                  if (!fs.length) return;
+                  const f = fs[0];
+                  const isVideo = /\.(mp4|webm|mov|m4v)$/i.test(f.name) || (f.type || '').indexOf('video/') === 0;
+                  showCropper(f, function(cropped) {
+                    importFile(cropped, 'session-item-bg').then(function (rec) {
+                      props.update(function (draft) {
+                        draft.appearance.sessionItemBgId = rec.id;
+                        draft.appearance.sessionItemBgType = isVideo ? 'video' : 'image';
+                      });
+                      toast('已设置会话条目' + (isVideo ? '视频' : '图片/GIF') + '背景');
+                    });
+                  });
+                });
+              } }, s.sessionItemBgId ? '更换背景' : '选背景'),
+              s.sessionItemBgId ? h(Btn, { icon: '✕', onClick: function () { props.update(function (d) { d.appearance.sessionItemBgId = null; d.appearance.sessionItemBgType = null; }); } }, '清除') : null) : null,
+            h(Row, { label: '自定义新会话按钮', hint: '单独给最上面的新会话按钮设底色和透明度' },
+              h(Switch, { on: !!s.newSessionEnabled, onChange: function (v) { props.setPath('appearance.newSessionEnabled', v); } })),
+            s.newSessionEnabled ? h(Row, { label: '新会话按钮底色', hint: '新会话按钮的背景颜色' },
+              h('input', { type: 'color', className: 'dsss-color', value: s.newSessionBg || '#4a7acc', onChange: function (e) { props.setPath('appearance.newSessionBg', e.target.value); } })) : null,
+            s.newSessionEnabled ? h(Row, { label: '新会话按钮透明度', hint: '新会话底色不透明度' },
+              h(Slider, { value: s.newSessionOpacity != null ? s.newSessionOpacity : 80, min: 0, max: 100, onChange: function (v) { props.setPath('appearance.newSessionOpacity', v); } }),
+              h('span', { className: 'dsss-value' }, (s.newSessionOpacity != null ? s.newSessionOpacity : 80) + '%')) : null,
+            s.newSessionEnabled ? h(Row, { label: '新会话按钮背景图', hint: '静态图/GIF/视频动态壁纸' },
+              h(Btn, { icon: '🖼', onClick: function () {
+                pickFiles({ accept: 'video/*,image/*', multiple: false }).then(function (fs) {
+                  if (!fs.length) return;
+                  const f = fs[0];
+                  const isVideo = /\.(mp4|webm|mov|m4v)$/i.test(f.name) || (f.type || '').indexOf('video/') === 0;
+                  showCropper(f, function(cropped) {
+                    importFile(cropped, 'newsession-bg').then(function (rec) {
+                      props.update(function (draft) {
+                        draft.appearance.newSessionBgId = rec.id;
+                        draft.appearance.newSessionBgType = isVideo ? 'video' : 'image';
+                      });
+                      toast('已设置新会话按钮' + (isVideo ? '视频' : '图片/GIF') + '背景');
+                    });
+                  });
+                });
+              } }, s.newSessionBgId ? '更换背景' : '选背景'),
+              s.newSessionBgId ? h(Btn, { icon: '✕', onClick: function () { props.update(function (d) { d.appearance.newSessionBgId = null; d.appearance.newSessionBgType = null; }); } }, '清除') : null) : null,
+            h(Row, { label: '自定义工作区文件夹', hint: '单独给工作区根文件夹条目设底色和透明度' },
+              h(Switch, { on: !!s.workspaceFolderEnabled, onChange: function (v) { props.setPath('appearance.workspaceFolderEnabled', v); } })),
+            s.workspaceFolderEnabled ? h(Row, { label: '文件夹底色', hint: '工作区根文件夹条目的背景颜色' },
+              h('input', { type: 'color', className: 'dsss-color', value: s.workspaceFolderBg || '#3a5a9e', onChange: function (e) { props.setPath('appearance.workspaceFolderBg', e.target.value); } })) : null,
+            s.workspaceFolderEnabled ? h(Row, { label: '文件夹透明度', hint: '文件夹底色不透明度' },
+              h(Slider, { value: s.workspaceFolderOpacity != null ? s.workspaceFolderOpacity : 70, min: 0, max: 100, onChange: function (v) { props.setPath('appearance.workspaceFolderOpacity', v); } }),
+              h('span', { className: 'dsss-value' }, (s.workspaceFolderOpacity != null ? s.workspaceFolderOpacity : 70) + '%')) : null,
+            s.workspaceFolderEnabled ? h(Row, { label: '文件夹背景图', hint: '静态图/GIF/视频动态壁纸' },
+              h(Btn, { icon: '🖼', onClick: function () {
+                pickFiles({ accept: 'video/*,image/*', multiple: false }).then(function (fs) {
+                  if (!fs.length) return;
+                  const f = fs[0];
+                  const isVideo = /\.(mp4|webm|mov|m4v)$/i.test(f.name) || (f.type || '').indexOf('video/') === 0;
+                  showCropper(f, function(cropped) {
+                    importFile(cropped, 'workspace-folder-bg').then(function (rec) {
+                      props.update(function (draft) {
+                        draft.appearance.workspaceFolderBgId = rec.id;
+                        draft.appearance.workspaceFolderBgType = isVideo ? 'video' : 'image';
+                      });
+                      toast('已设置文件夹' + (isVideo ? '视频' : '图片/GIF') + '背景');
+                    });
+                  });
+                });
+              } }, s.workspaceFolderBgId ? '更换背景' : '选背景'),
+              s.workspaceFolderBgId ? h(Btn, { icon: '✕', onClick: function () { props.update(function (d) { d.appearance.workspaceFolderBgId = null; d.appearance.workspaceFolderBgType = null; }); } }, '清除') : null) : null
           )
         ),
 

@@ -21,6 +21,9 @@
       const aiImg = urls.ai ? 'url("' + urls.ai + '")' : 'linear-gradient(145deg,#7c8cff,#33396b)';
       const composerBgImg = urls.composer ? 'url("' + urls.composer + '")' : 'none';
       const sidebarBgImg = urls.sidebar ? 'url("' + urls.sidebar + '")' : 'none';
+      const newSessionBgImg = urls.newSession ? 'url("' + urls.newSession + '")' : 'none';
+      const workspaceFolderBgImg = urls.workspaceFolder ? 'url("' + urls.workspaceFolder + '")' : 'none';
+      const sessionItemBgImg = urls.sessionItem ? 'url("' + urls.sessionItem + '")' : 'none';
       const chatBgImg = urls.chat ? 'url("' + urls.chat + '")' : 'none';
       const userBubbleBgImg = urls.userBubble ? 'url("' + urls.userBubble + '")' : 'none';
       const aiBubbleBgImg = urls.aiBubble ? 'url("' + urls.aiBubble + '")' : 'none';
@@ -47,6 +50,12 @@
         '--dsss-composer-bg-image:' + (a.composerBgType === 'video' ? 'none' : composerBgImg) + ';',
         '--dsss-sidebar-bg:' + (a.sidebarNoFill ? 'unset' : hexToRgba(a.sidebarBg || '#000000', (a.sidebarOpacity != null ? a.sidebarOpacity : 60)/100)) + ';',
         '--dsss-sidebar-bg-image:' + (a.sidebarBgType === 'video' ? 'none' : sidebarBgImg) + ';',
+        '--dsss-session-item-bg:' + (a.sessionItemEnabled ? hexToRgba(a.sessionItemBg || '#4a7acc', (a.sessionItemOpacity != null ? a.sessionItemOpacity : 80)/100) : 'unset') + ';',
+        '--dsss-session-item-bg-image:' + (a.sessionItemEnabled && a.sessionItemBgType !== 'video' ? sessionItemBgImg : 'none') + ';',
+        '--dsss-new-session-bg:' + (a.newSessionEnabled ? hexToRgba(a.newSessionBg || '#4a7acc', (a.newSessionOpacity != null ? a.newSessionOpacity : 80)/100) : 'var(--dsss-session-item-bg)') + ';',
+        '--dsss-new-session-bg-image:' + (a.newSessionEnabled && a.newSessionBgType !== 'video' ? newSessionBgImg : 'none') + ';',
+        '--dsss-workspace-folder-bg:' + (a.workspaceFolderEnabled ? hexToRgba(a.workspaceFolderBg || '#4a7acc', (a.workspaceFolderOpacity != null ? a.workspaceFolderOpacity : 80)/100) : 'var(--dsss-session-item-bg)') + ';',
+        '--dsss-workspace-folder-bg-image:' + (a.workspaceFolderEnabled && a.workspaceFolderBgType !== 'video' ? workspaceFolderBgImg : 'none') + ';',
         '--dsss-chat-bg-image:' + (a.chatBgType === 'video' ? 'none' : chatBgImg) + ';',
         '--dsss-user-bubble-bg-image:' + (a.userBubbleBgType === 'video' ? 'none' : userBubbleBgImg) + ';',
         '--dsss-ai-bubble-bg-image:' + (a.aiBubbleBgType === 'video' ? 'none' : aiBubbleBgImg) + ';',
@@ -66,8 +75,22 @@
       ].join('\n');
     }
 
+    /* 多处挂载时共享同一份设置：否则两个实例各持一份 state，开关与壁纸层会互相打架 */
+    const SETTINGS_STORE = { state: null, subs: [] };
+    function settingsStoreGet() {
+      if (!SETTINGS_STORE.state) SETTINGS_STORE.state = loadSettings();
+      return SETTINGS_STORE.state;
+    }
+    function settingsStoreCommit(next) {
+      SETTINGS_STORE.state = next;
+      saveSettingsSoon(next);
+      SETTINGS_STORE.subs.slice().forEach(function (fn) {
+        try { fn(next); } catch (e) { /* ignore */ }
+      });
+    }
+
     function SkinStudio(props) {
-      const [settings, setSettings] = useState(function () { return loadSettings(); });
+      const [settings, setSettings] = useState(settingsStoreGet);
       const settingsRef = useRef(settings);
       settingsRef.current = settings;
 
@@ -83,27 +106,31 @@
       const stageRef = useRef({ root: null, media: null, mask: null, video: null });
 
       const setPath = useCallback(function (path, value) {
-        setSettings(function (prev) {
-          const next = JSON.parse(JSON.stringify(prev));
-          const parts = String(path).split('.');
-          let o = next;
-          for (let i = 0; i < parts.length - 1; i++) {
-            if (!isObj(o[parts[i]])) o[parts[i]] = {};
-            o = o[parts[i]];
-          }
-          o[parts[parts.length - 1]] = value;
-          saveSettingsSoon(next);
-          return next;
-        });
+        const next = JSON.parse(JSON.stringify(settingsStoreGet()));
+        const parts = String(path).split('.');
+        let o = next;
+        for (let i = 0; i < parts.length - 1; i++) {
+          if (!isObj(o[parts[i]])) o[parts[i]] = {};
+          o = o[parts[i]];
+        }
+        o[parts[parts.length - 1]] = value;
+        settingsStoreCommit(next);
       }, []);
 
       const update = useCallback(function (mutator) {
-        setSettings(function (prev) {
-          const next = JSON.parse(JSON.stringify(prev));
-          mutator(next);
-          saveSettingsSoon(next);
-          return next;
-        });
+        const next = JSON.parse(JSON.stringify(settingsStoreGet()));
+        mutator(next);
+        settingsStoreCommit(next);
+      }, []);
+
+      useEffect(function () {
+        const fn = function (next) { setSettings(next); };
+        SETTINGS_STORE.subs.push(fn);
+        setSettings(settingsStoreGet());
+        return function () {
+          const i = SETTINGS_STORE.subs.indexOf(fn);
+          if (i >= 0) SETTINGS_STORE.subs.splice(i, 1);
+        };
       }, []);
 
       const setQuotes = useCallback(function (list) {
@@ -173,6 +200,9 @@
       const wpUrl = useBlobUrl(settings.wallpaper.current && wpRec ? settings.wallpaper.current : null);
       const composerBgUrl = useBlobUrl(settings.appearance.composerBgId);
       const sidebarBgUrl = useBlobUrl(settings.appearance.sidebarBgId);
+      const newSessionBgUrl = useBlobUrl(settings.appearance.newSessionBgId);
+      const workspaceFolderBgUrl = useBlobUrl(settings.appearance.workspaceFolderBgId);
+      const sessionItemBgUrl = useBlobUrl(settings.appearance.sessionItemBgId);
       const chatBgUrl = useBlobUrl(settings.appearance.chatBgId);
       const userBubbleBgUrl = useBlobUrl(settings.appearance.userBubbleBgId);
       const aiBubbleBgUrl = useBlobUrl(settings.appearance.aiBubbleBgId);
@@ -188,11 +218,11 @@
 
       useEffect(function () {
         if (!varsRef.current) return;
-        varsRef.current.textContent = varsCss(settings, { user: userAvUrl, ai: aiAvUrl, composer: composerBgUrl, sidebar: sidebarBgUrl, chat: chatBgUrl, userBubble: userBubbleBgUrl, aiBubble: aiBubbleBgUrl });
-      }, [settings, userAvUrl, aiAvUrl, composerBgUrl, sidebarBgUrl, chatBgUrl, userBubbleBgUrl, aiBubbleBgUrl]);
+        varsRef.current.textContent = varsCss(settings, { user: userAvUrl, ai: aiAvUrl, composer: composerBgUrl, sidebar: sidebarBgUrl, newSession: newSessionBgUrl, workspaceFolder: workspaceFolderBgUrl, sessionItem: sessionItemBgUrl, chat: chatBgUrl, userBubble: userBubbleBgUrl, aiBubble: aiBubbleBgUrl });
+      }, [settings, userAvUrl, aiAvUrl, composerBgUrl, sidebarBgUrl, newSessionBgUrl, workspaceFolderBgUrl, sessionItemBgUrl, chatBgUrl, userBubbleBgUrl, aiBubbleBgUrl]);
 
-      // 插入动态背景视频
-      useEffect(function () {
+      // 插入动态背景视频（可重复调用，侧栏重渲染后自动补插）
+      const applyBgVideos = function () {
         // 输入框背景视频
         const composerEl = document.querySelector('[data-composer-card]');
         if (composerEl) {
@@ -227,7 +257,64 @@
             v.play().catch(function(){});
           }
         }
-        // 聊天区域背景视频
+        // 新会话按钮背景视频
+        if (settings.appearance.newSessionEnabled && settings.appearance.newSessionBgType === 'video' && newSessionBgUrl) {
+          const el = document.querySelector("button[class*='newSession']");
+          if (el) {
+            const old = el.querySelector('.dsss-newsession-video');
+            if (old) old.remove();
+            const v = document.createElement('video');
+            v.className = 'dsss-newsession-video';
+            v.src = newSessionBgUrl;
+            v.autoplay = true;
+            v.loop = true;
+            v.muted = true;
+            v.playsInline = true;
+            v.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;z-index:0;';
+            el.prepend(v);
+            v.play().catch(function(){});
+          }
+        } else {
+          document.querySelectorAll('.dsss-newsession-video').forEach(function (v) { v.remove(); });
+        }
+        // 工作区文件夹背景视频
+        if (settings.appearance.workspaceFolderEnabled && settings.appearance.workspaceFolderBgType === 'video' && workspaceFolderBgUrl) {
+          document.querySelectorAll("[data-slot='sidebar'] [class*='projectRow']").forEach(function(el) {
+            const old = el.querySelector('.dsss-folder-video');
+            if (old) old.remove();
+            const v = document.createElement('video');
+            v.className = 'dsss-folder-video';
+            v.src = workspaceFolderBgUrl;
+            v.autoplay = true;
+            v.loop = true;
+            v.muted = true;
+            v.playsInline = true;
+            v.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;z-index:0;';
+            el.prepend(v);
+            v.play().catch(function(){});
+          });
+        } else {
+          document.querySelectorAll('.dsss-folder-video').forEach(function (v) { v.remove(); });
+        }
+        // 会话条目背景视频（工作区行已由上面处理，这里只补会话子条目）
+        if (settings.appearance.sessionItemEnabled && settings.appearance.sessionItemBgType === 'video' && sessionItemBgUrl) {
+          document.querySelectorAll("[data-slot='sidebar'] [class*='wnFoaW_slot']").forEach(function (el) {
+            if (el.querySelector("[class*='projectRow']")) return;
+            if (el.querySelector('.dsss-session-video')) return;
+            const v = document.createElement('video');
+            v.className = 'dsss-session-video';
+            v.src = sessionItemBgUrl;
+            v.autoplay = true;
+            v.loop = true;
+            v.muted = true;
+            v.playsInline = true;
+            v.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;z-index:0;';
+            el.prepend(v);
+            v.play().catch(function(){});
+          });
+        } else {
+          document.querySelectorAll('.dsss-session-video').forEach(function (v) { v.remove(); });
+        }
         const chatEl = document.querySelector('[data-conversation-scroll]');
         if (chatEl) {
           const old = chatEl.querySelector('.dsss-chat-bg-video');
@@ -244,7 +331,22 @@
             v.play().catch(function(){});
           }
         }
-      }, [composerBgUrl, sidebarBgUrl, chatBgUrl, settings.appearance.composerBgType, settings.appearance.sidebarBgType, settings.appearance.chatBgType]);
+      };
+      useEffect(function () {
+        applyBgVideos();
+        const sb = document.querySelector('[data-slot="sidebar"]');
+        if (!sb) return;
+        let timer = 0;
+        const mo = new MutationObserver(function () {
+          if (timer) return;
+          timer = setTimeout(function () { timer = 0; applyBgVideos(); }, 200);
+        });
+        mo.observe(sb, { childList: true, subtree: true });
+        return function () {
+          mo.disconnect();
+          if (timer) clearTimeout(timer);
+        };
+      }, [composerBgUrl, sidebarBgUrl, newSessionBgUrl, workspaceFolderBgUrl, sessionItemBgUrl, chatBgUrl, settings.appearance.composerBgType, settings.appearance.sidebarBgType, settings.appearance.newSessionBgType, settings.appearance.workspaceFolderBgType, settings.appearance.sessionItemBgType, settings.appearance.chatBgType, settings.appearance.newSessionEnabled, settings.appearance.workspaceFolderEnabled, settings.appearance.sessionItemEnabled]);
 
       useEffect(function () {
         const b = document.body;
@@ -262,8 +364,6 @@
           ['data-dsss-wp', 'data-dsss-blur', 'data-dsss-chat', 'data-dsss-ai-bubble', 'data-dsss-intro'].forEach(function (a) { b.removeAttribute(a); });
         };
       }, []);
-
-      /* ------------------------- 壁纸层（body 直属，置于 UI 之下） ------------------------- */
 
       useEffect(function () {
         const root = document.createElement('div');
@@ -496,7 +596,7 @@
         resetUrlCache();
         idbClear().then(function () {
           const fresh = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
-          setSettings(fresh);
+          settingsStoreCommit(fresh);
           setQuotesState(DEFAULT_QUOTES.slice());
           setEmojisState([]);
           setFileList([]);
@@ -504,7 +604,7 @@
           setShowIntro(false);
           toast('已恢复到初始状态');
         }).catch(function () {
-          setSettings(JSON.parse(JSON.stringify(DEFAULT_SETTINGS)));
+          settingsStoreCommit(JSON.parse(JSON.stringify(DEFAULT_SETTINGS)));
           toast('设置已重置（文件清理失败）');
         });
       };
